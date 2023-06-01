@@ -145,9 +145,8 @@ formulario.addEventListener("submit", (e) => {
     destino: destino.value,
     owner: name.value,
     precio: price.value,
-    descripcion: description.value,
+    dias: days.value,
   };
-  console.log(cotizacion);
   crearCotizacion(cotizacion);
 });
 
@@ -157,26 +156,8 @@ function crearCotizacion(cotiz) {
 }
 
 addEventListener("DOMContentLoaded", () => {
-  verProductos();
+  verCotizaciones();
 });
 
-function verCotizaciones() {
-  if (cotizaciones.length > 0) {
-    renderizarCotizacion(cotizaciones);
-  }
-}
 
-function renderizarCotizacion(cotizaciones) {
-  productList.innerHTML = "";
-  productos.forEach((producto) => {
-    const { nombre, precio, descripcion } = producto;
-    productList.innerHTML += `
-        <div class="product-card">
-        <h3 class="product-name">${nombre}</h3>
-        <p class="product-price">${precio}</p>
-        <p class="product-description">${descripcion}</p>
-        <button class="btn-primary">Comprar</button>
-      </div>
-        `;
-  });
-}
+
