@@ -3,12 +3,12 @@
 
 // Valores diarios de los hoteles, media pensión y pensión completa, por pasajero
 
-const destino = [{ciudad: 'Bariloche', precio: 25000, medPension: 5000, pensCompleta: 9000, enOferta: false},
-                    {ciudad: 'Cataratas', precio: 20000, medPension: 4000, pensCompleta: 7000, enOferta: true},
-                    {ciudad: 'Mar del Plata', precio: 15000, medPension: 3500, pensCompleta: 6000, enOferta: true},
-                    {ciudad: 'Ushuaia', precio: 28000, medPension: 6000, pensCompleta: 11000, enOferta: false},
-                    {ciudad: 'Salta', precio: 19000, medPension: 3900, pensCompleta: 7200, enOferta: false},
-                    {ciudad: 'San Luis', precio: 18000, medPension: 3700, pensCompleta: 6900, enOferta: true},]
+const destinos = [{id: 0, ciudad: 'Bariloche', precio: 25000, medPension: 5000, pensCompleta: 9000, enOferta: false},
+                    {id: 1, ciudad: 'Cataratas', precio: 20000, medPension: 4000, pensCompleta: 7000, enOferta: true},
+                    {id: 2, ciudad: 'Mar del Plata', precio: 15000, medPension: 3500, pensCompleta: 6000, enOferta: true},
+                    {id: 3, ciudad: 'Ushuaia', precio: 28000, medPension: 6000, pensCompleta: 11000, enOferta: false},
+                    {id: 4, ciudad: 'Salta', precio: 19000, medPension: 3900, pensCompleta: 7200, enOferta: false},
+                    {id: 5, ciudad: 'San Luis', precio: 18000, medPension: 3700, pensCompleta: 6900, enOferta: true},]
 
 // Variables Globales del cotizador
 
@@ -137,27 +137,41 @@ const days = document.querySelector("#days");
 const cotizList = document.querySelector("#cotizList");
 const destinSelect = document.querySelector("#destinSelect");
 const ownerName = document.querySelector("#ownerName");
+const userEnLS = localStorage.getItem('usuario')
+
+leerLocalStorage()
+armarSelect()
 
 formulario.addEventListener("submit", (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const cotizacion = {
-    destino: destino.value,
-    owner: name.value,
-    precio: price.value,
-    dias: days.value,
-  };
-  crearCotizacion(cotizacion);
+    const cotizacion = {destino: destino.value, owner: name.value, precio: price.value, dias: days.value};
+    crearCotizacion(cotizacion);
+    localStorage.setItem('nombre', name)
 });
 
 function crearCotizacion(cotiz) {
-  cotizaciones.push(cotiz);
-  verCotizaciones();
+    cotizaciones.push(cotiz);
+    verCotizaciones();
 }
 
 addEventListener("DOMContentLoaded", () => {
-  verCotizaciones();
+    verCotizaciones();
 });
 
+function armarSelect() {
+    destinSelect.innerHTML = `<option value="" disabled selected>Seleccione un destino</option>`;
+    destinos.forEach((destino) => {
+    const { ciudad, id } = destino;
+    destinSelect.innerHTML += `
+    <option value="${id}">${ciudad}</option>`;
+    });
+}
+
+function leerLocalStorage(){
+    if (userEnLS) {
+        name = userEnLS
+    }
+}
 
 
