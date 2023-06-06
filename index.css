@@ -143,6 +143,8 @@ body {
   
   .cotiz-card .cotiz-pension {
     font-size: 16px;
+    color: #007bff;
+    font-weight: bold;
   }
   
   /*.cotiz-card button {
