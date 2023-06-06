@@ -192,6 +192,7 @@ addEventListener("DOMContentLoaded", () => {
 function leerLocalStorage(){
     if (ultimaCotiz) {
         console.log(ultimaCotiz)
+        crearCotizacion(ultimaCotiz)
     }else{
         console.log('no hay cotizaciones en Local Storage')
     }
