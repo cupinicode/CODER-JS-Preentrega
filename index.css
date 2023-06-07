@@ -94,7 +94,7 @@ body {
     background-color: #fff;
   }
   
-  input[type="submit"] {
+  input[type="submit"], [type="button"] {
     padding: 10px 20px;
     border: none;
     border-radius: 3px;

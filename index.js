@@ -30,13 +30,14 @@ const destinSelect = document.querySelector("#destinSelect");
 const pensionSelect = document.querySelector("#pensionSelect");
 const ownerName = document.querySelector("#owner-name");
 
-let cotizaciones = JSON.parse(localStorage.getItem('cotiz')) // Leo el ARRAY de Cotizaciones desde el localStorage
+// Leo el ARRAY de Cotizaciones desde el localStorage(JSON) y lo convierto a Array de Objetos
+let cotizaciones = JSON.parse(localStorage.getItem('cotiz')) 
 
 // Funciones usadas en el programa
 
 function calcular() { // Devuelve el costo TOTAL del paquete turístico
     let acum = destinos[destinSelect.value].precio * days.value * pax.value
-        switch (pensionSelect.value) {
+        switch (pensionSelect.value) { //Agrega los valores de pensión completa o media pensión, si corresponde
             case "0" : acum += destinos[destinSelect.value].medPension * days.value * pax.value; break;
             case "1" : acum += destinos[destinSelect.value].pensCompleta * days.value * pax.value; break;
         }
@@ -45,12 +46,12 @@ function calcular() { // Devuelve el costo TOTAL del paquete turístico
 
 function crearCotizacion(cotiz) { //agrega la cotización en pantalla al ARRAY de Cotizaciones
     cotizaciones.push(cotiz);
-    verCotizaciones();
+    verCotizaciones(); //Llamo a la funciaón que me muestra TODO el Array de Cotizaciones
 }
 
 function armarSelect() { //Arma el SELECT de DESTINOS
     destinSelect.innerHTML = `<option value="" disabled selected>Seleccione un destino</option>`;
-    destinos.forEach((destino) => {
+    destinos.forEach((destino) => { //Del Array de Destinos, sólo toma ID y Ciudad
     const { ciudad, id } = destino;
     destinSelect.innerHTML += `
     <option value="${id}">${ciudad}</option>`;
@@ -66,19 +67,20 @@ function verCotizaciones() { //Arma las CARDs de todas las cotizaciones
 function renderizarCotizaciones() {
     cotizList.innerHTML = "";
     cotizaciones.forEach((coti) => { // Recorro el Array de Cotizaciones
-    const { destino, dias, precio, pax, pension, promo } = coti;
-    const oferta = promo ? "PROMOCIÓN !" : ""
-    cotizList.innerHTML += `
-    <div class="cotiz-card">
-    <h3 class="cotiz-destin">${destinos[destino].ciudad}</h3>` +
-    `<h4 class="cotiz-price">TOTAL $ ${precio}  </h4>
-    <h5 class="cotiz-price">  ${oferta}</h5>
-    <p class="cotiz-days">${dias} dias</p>
-    <p class="cotiz-pax">${pax} pasajeros</p>
-    <p class="cotiz-pension">${pensionTxt[pension]}</p>
-    <button class="btn-primary">Reservar</button>
-    </div>
-    `; 
+        const { destino, dias, precio, pax, pension, promo } = coti;
+        const oferta = promo ? "PROMOCIÓN !" : "" //Agrego "PROMOCIÓN" a los destinos que tienen la propiedad enOferta=TRUE
+        // Armado del HTML de la CARD de la cotización actual
+        cotizList.innerHTML += `
+        <div class="cotiz-card">
+        <h3 class="cotiz-destin">${destinos[destino].ciudad}</h3>` +
+        `<h4 class="cotiz-price">TOTAL $ ${precio}  </h4>
+        <h5 class="cotiz-price">  ${oferta}</h5>
+        <p class="cotiz-days">${dias} dias</p>
+        <p class="cotiz-pax">${pax} pasajeros</p>
+        <p class="cotiz-pension">${pensionTxt[pension]}</p>
+        <button class="btn-primary">Reservar</button>
+        </div>
+        `; 
     });
 }
 
@@ -91,7 +93,8 @@ formulario.addEventListener("submit", (e) => { //Acciones del Boton "GENERAR COT
     const cotizacion = {destino: destinSelect.value, owner: ownerName.value, pax: pax.value, precio: calcular(), 
         dias: days.value, pension: pensionSelect.value, promo: destinos[destinSelect.value].enOferta}; //Armo la cotización
     crearCotizacion(cotizacion); //Agrego la Cotización al ARRAY de Cotizaciones
-    localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) //Guardo el ARRAY de Cotizaciones en localStorage
+    //Guardo el ARRAY de Cotizaciones en localStorage, convirtiéndolo a JSON
+    localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) 
 });
 
 addEventListener("DOMContentLoaded", () => verCotizaciones()) //Inicia mostrando las cotizaciones grabadas en localStorage
