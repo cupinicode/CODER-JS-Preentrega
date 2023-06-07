@@ -157,7 +157,8 @@ formulario.addEventListener("submit", (e) => {
     console.log(destinSelect.value)
     console.log(pax.value)
     console.log(ownerName.value)
-    const cotizacion = {destino: destinSelect.value, owner: ownerName.value, pax: pax.value, precio: calcular(), dias: days.value, pension: pensionSelect.value};
+    const cotizacion = {destino: destinSelect.value, owner: ownerName.value, pax: pax.value, precio: calcular(), 
+        dias: days.value, pension: pensionSelect.value, promo: destinos[destinSelect.value].enOferta};
     console.log(cotizacion.precio)
     crearCotizacion(cotizacion);
     localStorage.setItem('ultimaCotiz', JSON.stringify(cotizacion))
@@ -208,15 +209,18 @@ function verCotizaciones() {
 function renderizarCotizaciones() {
     cotizList.innerHTML = "";
     cotizaciones.forEach((coti) => {
-    const { destino, dias, precio, pax, pension } = coti;
+    const { destino, dias, precio, pax, pension, promo } = coti;
+    const oferta = promo ? "PROMOCIÓN !" : ""
     cotizList.innerHTML += `
     <div class="cotiz-card">
-    <h3 class="cotiz-destin">${destinos[destino].ciudad}</h3>
-    <p class="cotiz-price">TOTAL $ ${precio}</p>
+    <h3 class="cotiz-destin">${destinos[destino].ciudad}</h3>` +
+    `<h4 class="cotiz-price">TOTAL $ ${precio}  </h4>
+    <h5 class="cotiz-price">  ${oferta}</h5>
     <p class="cotiz-days">${dias} dias</p>
     <p class="cotiz-pax">${pax} pasajeros</p>
     <p class="cotiz-pension">${pensionTxt[pension]}</p>
+    <button class="btn-primary">Reservar</button>
     </div>
-    `; // Botón de compra suprimido <button class="btn-primary">Comprar</button>
+    `; 
     });
 }

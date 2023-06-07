@@ -21,16 +21,21 @@ h1 {
 h2 {
   background-image: radial-gradient(cornsilk, rgb(240, 240, 152)); /*Gradiente muy suave*/
   text-align: center;
-  font-family: "Raleway", sans-serif; /* Accedo al mapa HEAD2*/
-  color: rgb(26, 25, 25); /* Accedo al mapa HEAD2*/
+  font-family: "Raleway", sans-serif;
+  color: rgb(26, 25, 25); 
   font-size: 24px; /*180%;*/
 }
 
-.simulador{
-    display: flex;
-    flex-direction: column;
-    width: 600px;
-    margin: auto;
+h4 {
+  display: inline-block;
+}
+
+h5 {
+  display: inline-block;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  color: crimson;
+  font-weight: bolder;
+  margin-left: 15px;
 }
 
 .disable{
@@ -53,7 +58,7 @@ body {
     padding: 20px;
     background-color: lightgreen;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .9);
   }
     
   .section {
@@ -66,7 +71,7 @@ body {
   
   label {
     display: block;
-    font-weight: bold;
+    font-weight: bolder;
     margin-bottom: 5px;
   }
   
@@ -105,7 +110,7 @@ body {
   
   .cotiz-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: 1fr 1fr;/*repeat(auto-fit, minmax(250px, 1fr));*/
     grid-gap: 20px;
   }
   
@@ -113,13 +118,14 @@ body {
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: #f9f9f9;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
+    background-color: #f9f9f9c9;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.4s ease;
   }
   
   .cotiz-card:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    background-color: #f9f9f9;
   }
   
   .cotiz-card .cotiz-destin {
@@ -134,11 +140,11 @@ body {
   }
   
   .cotiz-card .cotiz-pax {
-    font-size: 14px;
+    font-size: 15px;
   }
   
   .cotiz-card .cotiz-days {
-    font-size: 14px;
+    font-size: 15px;
   }
   
   .cotiz-card .cotiz-pension {
@@ -147,14 +153,15 @@ body {
     font-weight: bold;
   }
   
-  /*.cotiz-card button {
+  .cotiz-card button {
     padding: 10px 20px;
     border: none;
+    width: 100%;
     border-radius: 3px;
     font-size: 16px;
     color: #fff;
     background-color: #007bff;
     cursor: pointer;
-  }*/
+  }
   
 
