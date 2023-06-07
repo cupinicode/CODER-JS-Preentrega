@@ -19,116 +19,20 @@ const destinos = [{id: 0, ciudad: 'Bariloche', precio: 25000, medPension: 5000, 
                     {id: 13, ciudad: 'San Juan', precio: 23000, medPension: 4200, pensCompleta: 8000, enOferta: false},
                     {id: 14, ciudad: 'Calafate', precio: 26000, medPension: 4800, pensCompleta: 8700, enOferta: true}]
 
-const pensionTxt = ["Media Pensión", "Pensión Completa", "No incluye Pensión"]
+const pensionTxt = ["Media Pensión", "Pensión Completa", "No incluye Pensión"] //Textos de las CARDs
 
-// Variables Globales del cotizador
+// Variables de Acceso al DOM
+const formulario = document.querySelector("#formulario");
+const pax = document.querySelector("#pax");
+const days = document.querySelector("#days");
+const cotizList = document.querySelector("#cotizList");
+const destinSelect = document.querySelector("#destinSelect");
+const pensionSelect = document.querySelector("#pensionSelect");
+const ownerName = document.querySelector("#owner-name");
 
-// Funciones
+let cotizaciones = JSON.parse(localStorage.getItem('cotiz')) // Leo el ARRAY de Cotizaciones desde el localStorage
 
-// function valorTotal() { // Devuelve el costo TOTAL del paquete turístico
-//     let acum = destino[opcDestino - 1].precio * cantDias * cantPasajeros 
-//     switch (opcPension) {
-//         case 1 : acum += destino[opcDestino - 1].medPension * cantDias * cantPasajeros; break;
-//         case 2 : acum += destino[opcDestino - 1].pensCompleta * cantDias * cantPasajeros; break;
-//     }
-//     return acum
-// }
-
-// function displayCotiz() { //Muestra la cotización --- Devuelve TRUE si continua o FALSE si debe salir
-//     continuar = Number(prompt('** COTIZACION REALIZADA **\n\n' + 
-//                                 'El costo total del paquete turístico es : $ ' + valorTotal() + '\n\n' +
-//                                 '1 - Volver al Menú PENSION\n' + 
-//                                 '2 - Salir del Cotizador')) != 2
-// }
-
-// function menuPension(){ //Permite seleccionar si se van a incluir comidas en el paquete
-//     do {
-//         opcPension = Number(prompt('** MENU PENSION **\n\n' + 
-//                                     '1 - Media Pensión\n' +
-//                                     '2 - Pensión Completa\n' +
-//                                     '3 - Sin pensión\n' +
-//                                     '4 - Volver al Menú DIAS'))
-//         if (opcPension < 4) {
-//             displayCotiz() //Llamamos a la pantalla de Cotización
-//         }
-//     } while (opcPension != 4 && continuar)
-// }
-
-// function menuDias(){ //Permite seleccionar la cantidad de días del viaje
-//     do {
-//         cantDias = Number(prompt('** MENU DIAS **\n\n' + 
-//                                     'Ingrese la cantidad de días del viaje (máx. 21)\n' + 
-//                                     '(0) para volver al Menú PASAJEROS'))
-//         if ((cantDias  >= 1) && (cantDias <= 21)) {
-//             menuPension() //Llamamos al menú PENSION
-//         }
-//     } while (cantDias > 0 && continuar) 
-// }
-
-// function menuPasajeros(){ //Permite seleccionar la cantidad de pasajeros
-//     do {
-//         cantPasajeros = Number(prompt('** MENU PASAJEROS **\n\n' + 
-//                                         'Ingrese la cantidad de pasajeros (máx. 20)\n' + 
-//                                         '(0) para volver al Menú DESTINO'))
-//         if ((cantPasajeros  >= 1) && (cantPasajeros <= 20)) {
-//             menuDias() //Llamamos al menú DIAS
-//         }
-//     } while (cantPasajeros > 0 && continuar)
-// }
-
-// function menuDestino(){ //Permite elegir el destino del viaje
-//     let temp = ''
-//     destino.forEach((element, i) => {temp+=`${i + 1} - ${element.ciudad}\n` 
-//     });
-//     do {
-//         opcDestino = Number(prompt('** MENU DESTINO **\n\n' + temp +
-//                                     '7 - Volver al Menú PRINCIPAL'))
-//         if (opcDestino < 7) {
-//             menuPasajeros() //Llamamos al menú PASAJEROS
-//         }
-//     } while (opcDestino != 7 && continuar)
-// }
-
-// function displayPrices() { //Muestra los precios de los diferentes destinos
-//     let temp = ''
-//     destino.forEach(element => {temp += element.ciudad + ' $ ' + element.precio + '\n'
-        
-//     });
-//     alert('** PRECIOS POR DIA Y POR PERSONA\n\n' + 
-//             ' -ALOJAMIENTO-\n' + temp)
-// }
-
-// function displayOffers() { //Muestra sólo los destinos con ofertas vigentes, filtrando por la propiedad "enOferta"
-//     let temp = ''
-//     destino.filter(element => element.enOferta).forEach(element => temp += element.ciudad + ' $ ' + element.precio + '\n');
-//     alert('\n***** OFERTAS IMPERDIBLES ***** \n\n' +
-//         'PRECIOS POR DIA Y POR PERSONA\n\n' + 
-//             ' -ALOJAMIENTO-\n' + temp)
-// }
-
-// function menuPrincipal(){ //Menú principal del cotizador
-//     alert('Bienvenido al Cotizador Interactivo\n' + 
-//             'de nuestra Agencia de Viajes \n')
-//     do {
-//         opcPrincipal = Number(prompt('** MENU PRINCIPAL **\n\n' + 
-//                                     '1 - Cotizar Viaje\n' +
-//                                     '2 - Ver Precios\n' +
-//                                     '3 - Ver Sólo Ofertas\n' +
-//                                     '4 - Salir'))
-//         switch (opcPrincipal) {
-//             case 1 : menuDestino(); break;
-//             case 2 : displayPrices(); break;
-//             case 3 : displayOffers(); break;
-//         }
-//     } while (opcPrincipal != 4 && continuar)
-//     alert('Gracias por utilizar nuestros servicios!')
-// }
-
-// Inicio
-
-// menuPrincipal() //Llamamos al Menú Principal del Cotizador
-
-// Fin
+// Funciones usadas en el programa
 
 function calcular() { // Devuelve el costo TOTAL del paquete turístico
     let acum = destinos[destinSelect.value].precio * days.value * pax.value
@@ -139,43 +43,12 @@ function calcular() { // Devuelve el costo TOTAL del paquete turístico
     return acum
 }
 
-let cotizaciones = []; //Inicializo el array de cotizaciones
-
-const formulario = document.querySelector("#formulario");
-const pax = document.querySelector("#pax");
-const days = document.querySelector("#days");
-const cotizList = document.querySelector("#cotizList");
-const destinSelect = document.querySelector("#destinSelect");
-const pensionSelect = document.querySelector("#pensionSelect");
-const ownerName = document.querySelector("#owner-name");
-const ultimaCotiz = JSON.parse(localStorage.getItem('ultimaCotiz'))
-
-armarSelect()
-
-formulario.addEventListener("submit", (e) => {
-    e.preventDefault();
-    console.log(destinSelect.value)
-    console.log(pax.value)
-    console.log(ownerName.value)
-    const cotizacion = {destino: destinSelect.value, owner: ownerName.value, pax: pax.value, precio: calcular(), 
-        dias: days.value, pension: pensionSelect.value, promo: destinos[destinSelect.value].enOferta};
-    console.log(cotizacion.precio)
-    crearCotizacion(cotizacion);
-    localStorage.setItem('ultimaCotiz', JSON.stringify(cotizacion))
-    console.log(cotizacion)
-});
-
-function crearCotizacion(cotiz) {
+function crearCotizacion(cotiz) { //agrega la cotización en pantalla al ARRAY de Cotizaciones
     cotizaciones.push(cotiz);
     verCotizaciones();
 }
 
-addEventListener("DOMContentLoaded", () => 
-    //verCotizaciones();
-    console.log("addEventListener")
-)
-
-function armarSelect() {
+function armarSelect() { //Arma el SELECT de DESTINOS
     destinSelect.innerHTML = `<option value="" disabled selected>Seleccione un destino</option>`;
     destinos.forEach((destino) => {
     const { ciudad, id } = destino;
@@ -184,23 +57,7 @@ function armarSelect() {
     });
 }
 
-
-addEventListener("DOMContentLoaded", () => {
-    leerLocalStorage();
-});
-
-
-function leerLocalStorage(){
-    if (ultimaCotiz) {
-        console.log(ultimaCotiz)
-        crearCotizacion(ultimaCotiz)
-    }else{
-        console.log('no hay cotizaciones en Local Storage')
-    }
-}
-
-
-function verCotizaciones() {
+function verCotizaciones() { //Arma las CARDs de todas las cotizaciones
     if (cotizaciones.length > 0) {
         renderizarCotizaciones();
     }
@@ -208,7 +65,7 @@ function verCotizaciones() {
 
 function renderizarCotizaciones() {
     cotizList.innerHTML = "";
-    cotizaciones.forEach((coti) => {
+    cotizaciones.forEach((coti) => { // Recorro el Array de Cotizaciones
     const { destino, dias, precio, pax, pension, promo } = coti;
     const oferta = promo ? "PROMOCIÓN !" : ""
     cotizList.innerHTML += `
@@ -224,3 +81,19 @@ function renderizarCotizaciones() {
     `; 
     });
 }
+
+// INICIO del Código
+
+armarSelect() //Llamo a la función que arma la lista de DESTINOS
+
+formulario.addEventListener("submit", (e) => { //Acciones del Boton "GENERAR COTIZACION"
+    e.preventDefault(); //Anulo la recarga automática de la página
+    const cotizacion = {destino: destinSelect.value, owner: ownerName.value, pax: pax.value, precio: calcular(), 
+        dias: days.value, pension: pensionSelect.value, promo: destinos[destinSelect.value].enOferta}; //Armo la cotización
+    crearCotizacion(cotizacion); //Agrego la Cotización al ARRAY de Cotizaciones
+    localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) //Guardo el ARRAY de Cotizaciones en localStorage
+});
+
+addEventListener("DOMContentLoaded", () => verCotizaciones()) //Inicia mostrando las cotizaciones grabadas en localStorage
+
+// FIN del código
