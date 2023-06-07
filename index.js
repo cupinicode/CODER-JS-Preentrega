@@ -29,9 +29,10 @@ const cotizList = document.querySelector("#cotizList");
 const destinSelect = document.querySelector("#destinSelect");
 const pensionSelect = document.querySelector("#pensionSelect");
 const ownerName = document.querySelector("#owner-name");
+let btnBorrarUna = document.getElementById("btnBorrarUna")
+let btnBorrarTodas = document.getElementById("btnBorrarTodas")
 
-// Leo el ARRAY de Cotizaciones desde el localStorage(JSON) y lo convierto a Array de Objetos
-let cotizaciones = JSON.parse(localStorage.getItem('cotiz')) 
+let cotizaciones; // ARRAY donde se guardarán todas las cotizaciones realizadas
 
 // Funciones usadas en el programa
 
@@ -84,8 +85,17 @@ function renderizarCotizaciones() {
     });
 }
 
+function leerStorage(){
+    if (localStorage.getItem('cotiz')){ // Controlo que exista "cotiz" en el localStorage
+        cotizaciones = JSON.parse(localStorage.getItem('cotiz')) // Leo el ARRAY desde el localStorage(JSON) y lo convierto a Array de Objetos
+    } else {
+        cotizaciones = []; // Si no encuentro "cotiz" en localStorage, inicializo el array VACIO
+    }
+}
+
 // INICIO del Código
 
+leerStorage() //Chequeo el localStorage
 armarSelect() //Llamo a la función que arma la lista de DESTINOS
 
 formulario.addEventListener("submit", (e) => { //Acciones del Boton "GENERAR COTIZACION"
@@ -98,5 +108,17 @@ formulario.addEventListener("submit", (e) => { //Acciones del Boton "GENERAR COT
 });
 
 addEventListener("DOMContentLoaded", () => verCotizaciones()) //Inicia mostrando las cotizaciones grabadas en localStorage
+
+btnBorrarUna.addEventListener("click", () => {  //Handler BOTON Borrar ultima cotizacion
+    cotizaciones.pop(); // Elimino la última cotización ingresada al array de cotizaciones
+    localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) //Actualizo el ARRAY de Cotizaciones en localStorage (JSON)
+    renderizarCotizaciones(); // Actualizo los cambios
+})
+
+btnBorrarTodas.addEventListener("click", () => { //Handler BOTON Borrar todas
+    cotizaciones = []; // Limpio el array de cotizaciones
+    localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) //Actualizo el ARRAY de Cotizaciones en localStorage (JSON)
+    renderizarCotizaciones(); // Actualizo los cambios
+})
 
 // FIN del código
