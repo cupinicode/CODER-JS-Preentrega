@@ -47,7 +47,7 @@ function calcular() { // Devuelve el costo TOTAL del paquete turístico
 
 function crearCotizacion(cotiz) { //agrega la cotización en pantalla al ARRAY de Cotizaciones
     cotizaciones.push(cotiz);
-    verCotizaciones(); //Llamo a la funciaón que me muestra TODO el Array de Cotizaciones
+    renderizarCotizaciones(); //Llamo a la función que me muestra TODO el Array de Cotizaciones
 }
 
 function armarSelect() { //Arma el SELECT de DESTINOS
@@ -57,12 +57,6 @@ function armarSelect() { //Arma el SELECT de DESTINOS
     destinSelect.innerHTML += `
     <option value="${id}">${ciudad}</option>`;
     });
-}
-
-function verCotizaciones() { //Arma las CARDs de todas las cotizaciones
-    if (cotizaciones.length > 0) {
-        renderizarCotizaciones();
-    }
 }
 
 function renderizarCotizaciones() {
@@ -107,7 +101,7 @@ formulario.addEventListener("submit", (e) => { //Acciones del Boton "GENERAR COT
     localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) 
 });
 
-addEventListener("DOMContentLoaded", () => verCotizaciones()) //Inicia mostrando las cotizaciones grabadas en localStorage
+addEventListener("DOMContentLoaded", () => renderizarCotizaciones()) //Inicia mostrando las cotizaciones grabadas en localStorage
 
 btnBorrarUna.addEventListener("click", () => {  //Handler BOTON Borrar ultima cotizacion
     cotizaciones.pop(); // Elimino la última cotización ingresada al array de cotizaciones
