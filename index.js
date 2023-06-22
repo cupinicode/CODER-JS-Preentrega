@@ -28,13 +28,14 @@ const days = document.querySelector("#days");
 const cotizList = document.querySelector("#cotizList");
 const destinSelect = document.querySelector("#destinSelect");
 const pensionSelect = document.querySelector("#pensionSelect");
-const ownerName = document.querySelector("#owner-name");
-let btnBorrarUna = document.getElementById("btnBorrarUna")
-let btnBorrarTodas = document.getElementById("btnBorrarTodas")
-let btnReservar = document.getElementById("btnReservar")
-let apiNombre
-
+let ownerName = document.querySelector("#owner-name");
+let email = document.querySelector("#email");
+let btnBorrarUna = document.getElementById("btnBorrarUna");
+let btnBorrarTodas = document.getElementById("btnBorrarTodas");
+let btnReservar = document.getElementById("btnReservar");
+let ultimoId // Almacena el ID de la última cotización realizada
 let cotizaciones; // ARRAY donde se guardarán todas las cotizaciones realizadas
+
 
 // Funciones usadas en el programa
 
@@ -63,61 +64,75 @@ function armarSelect() { //Arma el SELECT de DESTINOS
 
 function renderizarCotizaciones() {
     cotizList.innerHTML = "";
-    let i=0
+    let i=0  // Variable para completar el nombre de los botones (Ej btnReservar4) y numerar las tarjetas
     cotizaciones.forEach((coti) => { // Recorro el Array de Cotizaciones
-        const { destino, dias, precio, pax, pension, promo } = coti;
+        let { destino, dias, precio, pax, pension, promo } = coti;
         const oferta = promo ? "PROMOCIÓN !" : "" //Agrego "PROMOCIÓN" a los destinos que tienen la propiedad enOferta=TRUE
         // Armado del HTML de la CARD de la cotización actual
-        i++
-        cotizList.innerHTML += `
-        <div class="cotiz-card">
-        <h3 class="cotiz-destin">${destinos[destino].ciudad}</h3>` +
-        `<h4 class="cotiz-price">TOTAL $ ${precio}  </h4>
-        <h5 class="cotiz-price">  ${oferta}</h5>
-        <p class="cotiz-days">${dias} dias</p>
-        <p class="cotiz-pax">${pax} pasajeros</p>
-        <p class="cotiz-pension">${pensionTxt[pension]}</p>
-        <button class="btn-primary" id="btnReservar${i}">Reservar</button>
+        let nodo = document.createElement("div") //Creo un nodo nuevo para cada cotizacion
+        cotizaciones[i].orden = i //Le asigno un numero de orden a la tarjeta
+        nodo.setAttribute("class", "cotiz-card");
+        nodo.innerHTML = `
+            <h3 class="cotiz-destin">${destinos[destino].ciudad}</h3>` +
+            `<h4 class="cotiz-price">TOTAL $ ${precio}  </h4>
+            <h5 class="cotiz-price">  ${oferta}</h5>
+            <p class="cotiz-days">${dias} dias</p>
+            <p class="cotiz-pax">${pax} pasajeros</p>
+            <p class="cotiz-pension">${pensionTxt[pension]}</p>
+            <button class="btn-primary" id="btnReservar${i}">Reservar</button>
+            <button class="btn-primary" id="btnEliminar${i}">Eliminar</button>
+        `
+        cotizList.appendChild(nodo);
 
-        </div>
-        `; 
-        const reservar=document.getElementById(`btnReservar${i}`)
+        const reservar = document.getElementById(`btnReservar${i}`)
+        const eliminar = document.getElementById(`btnEliminar${i}`)
         reservar.addEventListener('click', () => {
-            Swal.fire(`Gracias por reservar tu viaje a ${destino}`)
+            Swal.fire(`Gracias por reservar tu viaje a ${destinos[destino].ciudad} para ${pax} pasajeros`)
             console.log(i)
         }) 
+        eliminar.addEventListener('click', () => {
+            cotizaciones.splice(cotizaciones.indexOf(orden),1);
+            Swal.fire(`Eliminado ${orden}`)
+            localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) //Actualizo el ARRAY de Cotizaciones en localStorage (JSON)
+            renderizarCotizaciones()
+        });
+        i++
     });
 }
 
 
 
 function leerStorage(){
+    cotizaciones = []
     if (localStorage.getItem('cotiz')){ // Controlo que exista "cotiz" en el localStorage
         cotizaciones = JSON.parse(localStorage.getItem('cotiz')) // Leo el ARRAY desde el localStorage(JSON) y lo convierto a Array de Objetos
-    } else {
-        cotizaciones = []; // Si no encuentro "cotiz" en localStorage, inicializo el array VACIO
-    }
+    } 
 }
+
+function generarUsuarioRandom() { //Le pega a la API de usuarios RANDOM y modifica el DOM con los datos obtenidos
+    fetch('https://randomuser.me/api/')
+        .then(response => response.json())
+        .then(resultado => {
+             // Tomo los datos de la API de usuarios RANDOM y los Inserto el HTML
+            ownerName.value = resultado.results[0].name.first + ' ' + resultado.results[0].name.last;
+            email.value=resultado.results[0].email
+        })
+    .catch(error => console.log(error), ownerName.value = "", email.value="")
+}
+
 
 // INICIO del Código
 
 leerStorage() //Chequeo el localStorage
 armarSelect() //Llamo a la función que arma la lista de DESTINOS
-fetch('https://randomuser.me/api/')
-    .then(response => response.json())
-    .then(resultado => {
-        apiNombre = resultado.results[0].name.first })
-        // apiNombre = resultado.results[0].name.first + " " + resultado.results[0].name.last })
+generarUsuarioRandom() //Llamo a la API de usuarios random
 
-        console.log(apiNombre)
-        ownerName.value = apiNombre
 formulario.addEventListener("submit", (e) => { //Acciones del Boton "GENERAR COTIZACION"
     e.preventDefault(); //Anulo la recarga automática de la página
-    const cotizacion = {destino: destinSelect.value, owner: ownerName.value, pax: pax.value, precio: calcular(), 
+    const cotizacion = {orden: 0, destino: destinSelect.value, owner: ownerName.value, pax: pax.value, precio: calcular(), 
         dias: days.value, pension: pensionSelect.value, promo: destinos[destinSelect.value].enOferta}; //Armo la cotización
     crearCotizacion(cotizacion); //Agrego la Cotización al ARRAY de Cotizaciones
-    //Guardo el ARRAY de Cotizaciones en localStorage, convirtiéndolo a JSON
-    localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) 
+    localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) //Guardo el ARRAY de Cotizaciones en localStorage, convirtiéndolo a JSON
 });
 
 addEventListener("DOMContentLoaded", () => renderizarCotizaciones()) //Inicia mostrando las cotizaciones grabadas en localStorage
