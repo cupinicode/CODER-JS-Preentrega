@@ -31,6 +31,8 @@ const pensionSelect = document.querySelector("#pensionSelect");
 const ownerName = document.querySelector("#owner-name");
 let btnBorrarUna = document.getElementById("btnBorrarUna")
 let btnBorrarTodas = document.getElementById("btnBorrarTodas")
+let btnReservar = document.getElementById("btnReservar")
+let apiNombre
 
 let cotizaciones; // ARRAY donde se guardarán todas las cotizaciones realizadas
 
@@ -61,10 +63,12 @@ function armarSelect() { //Arma el SELECT de DESTINOS
 
 function renderizarCotizaciones() {
     cotizList.innerHTML = "";
+    let i=0
     cotizaciones.forEach((coti) => { // Recorro el Array de Cotizaciones
         const { destino, dias, precio, pax, pension, promo } = coti;
         const oferta = promo ? "PROMOCIÓN !" : "" //Agrego "PROMOCIÓN" a los destinos que tienen la propiedad enOferta=TRUE
         // Armado del HTML de la CARD de la cotización actual
+        i++
         cotizList.innerHTML += `
         <div class="cotiz-card">
         <h3 class="cotiz-destin">${destinos[destino].ciudad}</h3>` +
@@ -73,11 +77,19 @@ function renderizarCotizaciones() {
         <p class="cotiz-days">${dias} dias</p>
         <p class="cotiz-pax">${pax} pasajeros</p>
         <p class="cotiz-pension">${pensionTxt[pension]}</p>
-        <button class="btn-primary">Reservar</button>
+        <button class="btn-primary" id="btnReservar${i}">Reservar</button>
+
         </div>
         `; 
+        const reservar=document.getElementById(`btnReservar${i}`)
+        reservar.addEventListener('click', () => {
+            Swal.fire(`Gracias por reservar tu viaje a ${destino}`)
+            console.log(i)
+        }) 
     });
 }
+
+
 
 function leerStorage(){
     if (localStorage.getItem('cotiz')){ // Controlo que exista "cotiz" en el localStorage
@@ -91,7 +103,14 @@ function leerStorage(){
 
 leerStorage() //Chequeo el localStorage
 armarSelect() //Llamo a la función que arma la lista de DESTINOS
+fetch('https://randomuser.me/api/')
+    .then(response => response.json())
+    .then(resultado => {
+        apiNombre = resultado.results[0].name.first })
+        // apiNombre = resultado.results[0].name.first + " " + resultado.results[0].name.last })
 
+        console.log(apiNombre)
+        ownerName.value = apiNombre
 formulario.addEventListener("submit", (e) => { //Acciones del Boton "GENERAR COTIZACION"
     e.preventDefault(); //Anulo la recarga automática de la página
     const cotizacion = {destino: destinSelect.value, owner: ownerName.value, pax: pax.value, precio: calcular(), 
@@ -114,5 +133,7 @@ btnBorrarTodas.addEventListener("click", () => { //Handler BOTON Borrar todas
     localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) //Actualizo el ARRAY de Cotizaciones en localStorage (JSON)
     renderizarCotizaciones(); // Actualizo los cambios
 })
+
+
 
 // FIN del código
