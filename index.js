@@ -2,6 +2,7 @@
 // Programa Cotizador de paquetes turísticos
 
 // Valores diarios de los hoteles, media pensión y pensión completa, por pasajero
+// Incluye destinos "EN OFERTA"
 
 const destinos = [{id: 0, ciudad: 'Bariloche', precio: 25000, medPension: 5000, pensCompleta: 9000, enOferta: false},
                     {id: 1, ciudad: 'Cataratas', precio: 20000, medPension: 4000, pensCompleta: 7000, enOferta: true},
@@ -33,7 +34,6 @@ let email = document.querySelector("#email");
 let btnBorrarUna = document.getElementById("btnBorrarUna");
 let btnBorrarTodas = document.getElementById("btnBorrarTodas");
 let btnReservar = document.getElementById("btnReservar");
-let ultimoId // Almacena el ID de la última cotización realizada
 let cotizaciones; // ARRAY donde se guardarán todas las cotizaciones realizadas
 
 
@@ -55,8 +55,8 @@ function crearCotizacion(cotiz) { //agrega la cotización en pantalla al ARRAY d
 
 function armarSelect() { //Arma el SELECT de DESTINOS
     destinSelect.innerHTML = `<option value="" disabled selected>Seleccione un destino</option>`;
-    destinos.forEach((destino) => { //Del Array de Destinos, sólo toma ID y Ciudad
-    const { ciudad, id } = destino;
+    destinos.forEach((destino) => { 
+    const { ciudad, id } = destino;  //Del Array de Destinos, sólo toma ID y Ciudad
     destinSelect.innerHTML += `
     <option value="${id}">${ciudad}</option>`;
     });
@@ -64,39 +64,41 @@ function armarSelect() { //Arma el SELECT de DESTINOS
 
 function renderizarCotizaciones() {
     cotizList.innerHTML = "";
-    let i=0  // Variable para completar el nombre de los botones (Ej btnReservar4) y numerar las tarjetas
+    let i = 0  // Variable para completar el nombre de los botones (Ej btnReservar4) y numerar las tarjetas
     cotizaciones.forEach((coti) => { // Recorro el Array de Cotizaciones
-        let { destino, dias, precio, pax, pension, promo } = coti;
+        let { destino, dias, precio, pax, pension, promo } = coti;  //Tomo algunas propiedades del ARRAY
         const oferta = promo ? "PROMOCIÓN !" : "" //Agrego "PROMOCIÓN" a los destinos que tienen la propiedad enOferta=TRUE
         // Armado del HTML de la CARD de la cotización actual
-        let nodo = document.createElement("div") //Creo un nodo nuevo para cada cotizacion
-        cotizaciones[i].orden = i //Le asigno un numero de orden a la tarjeta
-        nodo.setAttribute("class", "cotiz-card");
+        let nodo = document.createElement("div") //Creo un nodo <DIV> nuevo para cada cotizacion
+        nodo.setAttribute("class", "cotiz-card"); // Le asigno los atributos al DIV
         nodo.innerHTML = `
             <h3 class="cotiz-destin">${destinos[destino].ciudad}</h3>` +
-            `<h4 class="cotiz-price">TOTAL $ ${precio}  </h4>
+            `<h4 class="cotiz-price">TOTAL $ ${precio}</h4>
             <h5 class="cotiz-price">  ${oferta}</h5>
             <p class="cotiz-days">${dias} dias</p>
             <p class="cotiz-pax">${pax} pasajeros</p>
             <p class="cotiz-pension">${pensionTxt[pension]}</p>
-            <button class="btn-primary" id="btnReservar${i}">Reservar</button>
-            <button class="btn-primary" id="btnEliminar${i}">Eliminar</button>
+            <div class="botones-card">
+                <button class="btn-primary" id="btnReservar${i}">Reservar</button>
+                <button class="btn-primary" id="btnEliminar${i}">Eliminar</button>
+            </div>
         `
-        cotizList.appendChild(nodo);
+        cotizList.appendChild(nodo); // Inserto el DIV creado en el HTML
 
-        const reservar = document.getElementById(`btnReservar${i}`)
-        const eliminar = document.getElementById(`btnEliminar${i}`)
+        const reservar = document.getElementById(`btnReservar${i}`) //Genero btnReservar0, btnReservar1, btnReservar2, etc
+        const eliminar = document.getElementById(`btnEliminar${i}`) //Genero btnEliminar0, btnEliminar1, btnEliminar2, etc
         reservar.addEventListener('click', () => {
-            Swal.fire(`Gracias por reservar tu viaje a ${destinos[destino].ciudad} para ${pax} pasajeros`)
-            console.log(i)
-        }) 
-        eliminar.addEventListener('click', () => {
-            cotizaciones.splice(cotizaciones.indexOf(orden),1);
-            Swal.fire(`Eliminado ${orden}`)
+            Swal.fire(`Gracias por reservar tu viaje a ${destinos[destino].ciudad} para ${pax} pasajeros`)}) 
+        eliminar.addEventListener('click', (e) => {
+            const orden = eliminar.id.substring(11) // Leo el ID del boton y obtengo el Nro de elemento del ARRAY que debo eliminar
+            cotizaciones.splice(orden,1); // Elimino el elemento del ARRAY de Cotizaciones
+            let elemento = e.target;  //
+            elemento.parentElement.parentElement.remove(); // Elimino al "abuelo" (la CARD completa)
+            Swal.fire("Cotizacion eliminada exitosamente")
             localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) //Actualizo el ARRAY de Cotizaciones en localStorage (JSON)
-            renderizarCotizaciones()
+            //renderizarCotizaciones() No es necesario, ya que lo elimino directamente del HTML
         });
-        i++
+        i++ // Incremento el Nro de orden de las tarjetas que voy generando
     });
 }
 
@@ -129,7 +131,7 @@ generarUsuarioRandom() //Llamo a la API de usuarios random
 
 formulario.addEventListener("submit", (e) => { //Acciones del Boton "GENERAR COTIZACION"
     e.preventDefault(); //Anulo la recarga automática de la página
-    const cotizacion = {orden: 0, destino: destinSelect.value, owner: ownerName.value, pax: pax.value, precio: calcular(), 
+    const cotizacion = {destino: destinSelect.value, owner: ownerName.value, pax: pax.value, precio: calcular(), 
         dias: days.value, pension: pensionSelect.value, promo: destinos[destinSelect.value].enOferta}; //Armo la cotización
     crearCotizacion(cotizacion); //Agrego la Cotización al ARRAY de Cotizaciones
     localStorage.setItem('cotiz', JSON.stringify(cotizaciones)) //Guardo el ARRAY de Cotizaciones en localStorage, convirtiéndolo a JSON
