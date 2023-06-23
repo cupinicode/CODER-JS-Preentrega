@@ -152,5 +152,4 @@ btnBorrarTodas.addEventListener("click", () => { //Handler BOTON Borrar todas
 })
 
 
-
 // FIN del código
